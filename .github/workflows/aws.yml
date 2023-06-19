@@ -1,17 +1,23 @@
-name: Crear Cognito User Pool
+name: Release
 on:
   push:
     branches:
-      - main
-
+      - dev
+permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read    # This is required for actions/checkout
 jobs:
-  create_user_pool:
+  build:
+    name: Build and Release
     runs-on: ubuntu-latest
+    environment:
+      name: dev
     steps:
-      - name: Checkout repositorio
-        uses: actions/checkout@v2
-
-      - name: Configurar AWS CLI
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
