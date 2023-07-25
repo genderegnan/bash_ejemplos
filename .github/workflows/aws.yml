@@ -1,55 +1,31 @@
-name: Watch
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: ['main']
+    branches:
+      - main
 
 jobs:
-  docker:
-    name: Push tagged docker image
+  deploy-to-main:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: main
-
-      - name: Login to ghcr
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update Dockerfile with latest version
-        id: fetch_version
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Save login image
         run: |
-          last=$(curl -s https://packagist.org/packages/vimeo/psalm.json|jq '[.package.versions[]|select(.version|test("^\\d+\\.\\d+\\.\\d+$"))|.version]|max_by(.|[splits("[.]")]|map(tonumber))')
-          last=$(echo $last | tr -d '"')
-          echo "Last Psalm version is $last"
-          echo "last=$last" >> $GITHUB_OUTPUT
-
-          sed -i -re "s/require vimeo\/psalm/require vimeo\/psalm:$last/" Dockerfile
-          cat Dockerfile
-
-      - name: Build images
-        run: docker build -t ghcr.io/psalm/psalm-security-scan:${{ steps.fetch_version.outputs.last }} -t ghcr.io/psalm/psalm-security-scan:latest .
-
-      - name: Publish
+          date=$(date)
+          echo $date > ./date.txt
+          
+      - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker push ghcr.io/psalm/psalm-security-scan:${{ steps.fetch_version.outputs.last }}
-          docker push ghcr.io/psalm/psalm-security-scan:latest
-
-      - name: Update action.yml
-        run : |
-          git config --global user.name "psalmbot"
-          git config --global user.email "bot@noreply.psalm.dev"
-          yq -i ".runs.image = \"docker://ghcr.io/psalm/psalm-security-scan:${{ steps.fetch_version.outputs.last }}\"" action.yml
-          #  Push commit when a file change has been made, skip if the commit would be empty
-          git commit -m "Add newer psalm docker image version ${{ steps.fetch_version.outputs.last }}" action.yml &&
-          git push origin main ||
-          true
+          git config --global user.name "genderegnan"
+          git config --global user.email "andereggenalexis@gmail.com"
+          git pull origin main
+          date=$(date)
+          echo $date > ./date.txt
+          git add -A
+          git commit -m "Add Images"
+          git push origin main
