@@ -12,11 +12,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Save login image
-        run: |
-          date=$(date)
-          echo $date > ./date.txt
-          
+        
       - name: Commit and push changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
