@@ -1,0 +1,26 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "genderegnan"
+          git config --global user.email "andereggenalexis@gmail.com"
+          date=$(date)
+          echo $date > ./date.txt
+          git add -A
+          git commit -m "Add Images"
+          git push origin main
