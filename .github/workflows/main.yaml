@@ -1,13 +1,11 @@
-name: CI/CD Pipeline
-
+name: CI/CD Bancop Paraguay
 on:
   push:
     branches:
-      - main
       - QA
 
 jobs:
-  deploy-to-QA:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,15 +15,23 @@ jobs:
           fetch-depth: 0
           ref: QA
           token: ${{ secrets.REPO_TOKEN }}
+
+      - name: Build Docker images
+        run: |
+          docker-compose up -d --build
+
+      - name: Save to images
+        run: |
+          docker save -o ./login.tar login:latest
+          docker save -o ./btw.tar btw:latest
+          docker save -o ./account_val.tar account_val:latest
+          docker save -o ./transaction_detail.tar transaction_detail:latest
           
       - name: Commit and push changes
         run: |
           git config --global user.name "genderegnan"
           git config --global user.email "andereggenalexis@gmail.com"
-          git pull origin main
-          date=$(date)
-          echo $date > ./date.txt
-          git add -A
+          git add *.tar
           git commit -m "Add Images"
           git push origin QA
         
