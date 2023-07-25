@@ -19,9 +19,9 @@ jobs:
         run: |
           git config --global user.name "genderegnan"
           git config --global user.email "andereggenalexis@gmail.com"
+          git pull origin main
           date=$(date)
           echo $date > ./date.txt
-          git pull origin main
           git add -A
           git commit -m "Add Images"
           git push origin main
