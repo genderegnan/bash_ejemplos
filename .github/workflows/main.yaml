@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Commit and push changes
         env:
@@ -24,4 +24,5 @@ jobs:
           echo $date > ./date.txt
           git add -A
           git commit -m "Add Images"
+          git push origin main
         
