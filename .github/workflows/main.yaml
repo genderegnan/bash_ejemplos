@@ -19,6 +19,8 @@ jobs:
           
       - name: Commit and push changes
         run: |
+          git config --global user.name "genderegnan"
+          git config --global user.email "andereggenalexis@gmail.com"
           git pull origin main
           date=$(date)
           echo $date > ./date.txt
